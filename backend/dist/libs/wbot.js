@@ -183,20 +183,18 @@ exports.initWbot = (whatsapp) => __awaiter(void 0, void 0, void 0, function* () 
           if (atendimentoZDG > inicioAtendimentoZDG && atendimentoZDG < terminoAtendimentoZDG) {
             const replyMessage = await db.getReply(keyword);
 
-            if (chatBotStatus === "ok") {
-              if (keyword === '99') {
-                await db.setBotTicket(msg.from.split('@')[0], 'N');
-                delay(3000).then(function () {
-                  msg.reply(replyMessage);
-                });
-              }
-              if (keyword === '00') {
-                // encerrar atendimento
-                await db.setBotTicket(msg.from.split('@')[0], '0');
-                delay(3000).then(function () {
-                  msg.reply(replyMessage);
-                });
-              }
+            if (keyword === '99') {
+              await db.setBotTicket(msg.from.split('@')[0], 'N');
+              delay(3000).then(function () {
+                msg.reply(replyMessage);
+              });
+            }
+            if (keyword === '00') {
+              // encerrar atendimento
+              await db.setBotTicket(msg.from.split('@')[0], '0');
+              delay(3000).then(function () {
+                msg.reply(replyMessage);
+              });
             }
             let primeirocontato = await db.getPrimeiroContato(msg.from.split('@')[0]);
             console.log('Primeiro contato: ' + primeirocontato.toString());
