@@ -44,7 +44,7 @@ async function ZDGSender(dataEnvio, id, token) {
 
 const init2 = {
 	host: process.env.REACT_APP_BACKEND_URL.split("//")[1],
-	path: '/whatsappzdg'
+	path: 'whatsappzdg'
   };
   
 async function GETSender() {
