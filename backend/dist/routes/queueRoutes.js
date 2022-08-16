@@ -27,6 +27,9 @@ const isAuth_1 = __importDefault(require("../middleware/isAuth"));
 const QueueController = __importStar(require("../controllers/QueueController"));
 const queueRoutes = express_1.Router();
 queueRoutes.get("/queue", isAuth_1.default, QueueController.index);
+
+queueRoutes.get("/queueTodos", QueueController.todos);
+
 queueRoutes.post("/queue", isAuth_1.default, QueueController.store);
 queueRoutes.get("/queue/:queueId", isAuth_1.default, QueueController.show);
 queueRoutes.put("/queue/:queueId", isAuth_1.default, QueueController.update);

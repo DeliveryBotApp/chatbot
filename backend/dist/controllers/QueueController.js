@@ -23,6 +23,12 @@ exports.index = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const queues = yield ListQueuesService_1.default();
     return res.status(200).json(queues);
 });
+
+exports.todos = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const queues = yield ListQueuesService_1.default();
+    return res.status(200).json(queues);
+});
+
 exports.store = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { name, color, greetingMessage } = req.body;
     const queue = yield CreateQueueService_1.default({ name, color, greetingMessage });

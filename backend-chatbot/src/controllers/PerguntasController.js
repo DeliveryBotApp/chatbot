@@ -23,11 +23,12 @@ controllers.list = async (req, res) => {
 }
 
 controllers.create = async(req, res) => {
-    const {pergunta, resposta} = req.body;
-
+    const {pergunta, resposta, departamento} = req.body;
+    
     const data = await perguntas.create({
         pergunta:pergunta,
-        resposta:resposta
+        resposta:resposta,
+        idDepartamento:departamento
     })
     .then(function(data){
         return data;
@@ -68,11 +69,12 @@ controllers.update = async (req,res) => {
     // parameter get id
     const { id } = req.params;
     // parameter POST
-    const {pergunta, resposta } = req.body;
+    const {pergunta, resposta, departamento } = req.body;
     // Update data
     const data = await perguntas.update({
       pergunta:pergunta,
-      resposta:resposta
+      resposta:resposta,
+      idDepartamento: departamento
     },
     {
       where: { id: id}

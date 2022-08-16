@@ -10,7 +10,9 @@ var pergunta = sequelize.define(nametable, {
         autoIncrement:true
     },
     pergunta: Sequelize.TEXT('long'),
-    resposta: Sequelize.TEXT('long')
+    resposta: Sequelize.TEXT('long'),
+    idDepartamento: Sequelize.INTEGER,
+    Departamento: Sequelize.TEXT('long')
 })
 
 module.exports = pergunta;

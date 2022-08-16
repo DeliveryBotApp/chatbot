@@ -42,14 +42,15 @@ const CreateOrUpdateContactService = ({ name, number: rawNumber, profilePicUrl, 
             contact
         });
     }
-    const getDialogFlowContact = yield GetDialogContact.default(number);
+    /*const getDialogFlowContact = yield GetDialogContact.default(number);
     if (getDialogFlowContact === true){
         console.log('Contato já existe para o DialogFlow');
     }
     else if (getDialogFlowContact === false){
         console.log('Contato adicionado para o DialogFlow');
         yield SetDialogContact.default(number);
-    }
+    }*/
+    
     return contact;
 });
 exports.default = CreateOrUpdateContactService;

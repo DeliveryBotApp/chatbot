@@ -36,7 +36,7 @@ const Chatbot = () => {
 
 	return (
 		<div className={classes.root}> 
-		<iframe title="Chatbot" src='https://strcf.whatscontabil.com.br' height='800' width='100%' frameBorder="0"/>  
+		<iframe title="Chatbot" src='https://wzapbotapp.whatscontabil.com.br' height='800' width='100%' frameBorder="0"/>  
 		</div>
 	);
 };

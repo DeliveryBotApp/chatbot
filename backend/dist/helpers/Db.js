@@ -1,3 +1,4 @@
+const { delay } = require('bluebird');
 const mysql = require('mysql2/promise');
 
 const createConnection = async () => {
@@ -11,14 +12,26 @@ const createConnection = async () => {
 
 const getReply = async (keyword) => {
 	const connection = await createConnection();
-	const [rows] = await connection.execute('SELECT resposta FROM chatbots WHERE pergunta = ?', [keyword]);
-	if (rows.length > 0) return rows[0].resposta;
+	const [rows] = await connection.execute('SELECT resposta,idDepartamento FROM chatbots WHERE pergunta = ?', [keyword]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
+	if (rows.length > 0) return rows;
 	return false;
 }
 
 const getAgendamento = async (dataEnvio) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT * FROM agendamentos WHERE dataEnvio = ? AND statusEnvio != "Enviado"', [dataEnvio]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -26,6 +39,12 @@ const getAgendamento = async (dataEnvio) => {
 const setAgendamento = async (id) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE agendamentos SET statusEnvio = "Enviado" WHERE id = ?', [id]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -33,6 +52,12 @@ const setAgendamento = async (id) => {
 const getChatBot = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT status FROM statuschatbots WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].status;
 	return false;
 }
@@ -40,6 +65,12 @@ const getChatBot = async (msgFrom) => {
 const getChatBot2 = async (contato) => {
 	const connection = await createConnection();
 	let ipsel = "select c.number, cb.status from Contacts c inner join statuschatbots cb on cb.msgFrom = c.number where c.id = " + contato;
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	const [rows] = await connection.execute(ipsel);
 	if (rows.length > 0) return rows[0].status;
 	return false;
@@ -48,6 +79,12 @@ const getChatBot2 = async (contato) => {
 const setChatBotOff = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE statuschatbots SET status = "off" WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -55,6 +92,12 @@ const setChatBotOff = async (msgFrom) => {
 const setChatBotOn = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE statuschatbots SET status = "ok" WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -62,6 +105,12 @@ const setChatBotOn = async (msgFrom) => {
 const getDialogFlowAudio = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT status FROM dialogFlowaudios WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].status;
 	return false;
 }
@@ -69,6 +118,12 @@ const getDialogFlowAudio = async (msgFrom) => {
 const setDialogOffAudio = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE dialogFlowaudios SET status = "off" WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -76,6 +131,12 @@ const setDialogOffAudio = async (msgFrom) => {
 const setDialogOnAudio = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE dialogFlowaudios SET status = "ok" WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -83,6 +144,12 @@ const setDialogOnAudio = async (msgFrom) => {
 const getDialogFlow = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT status FROM dialogFlows WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].status;
 	return false;
 }
@@ -90,6 +157,12 @@ const getDialogFlow = async (msgFrom) => {
 const setDialogOff = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE dialogFlows SET status = "off" WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -97,6 +170,12 @@ const setDialogOff = async (msgFrom) => {
 const setDialogOn = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('UPDATE dialogFlows SET status = "ok" WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -104,6 +183,12 @@ const setDialogOn = async (msgFrom) => {
 const setContactDialog = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('INSERT INTO dialogFlows (`id`, `msgFrom`) VALUES (NULL, ?);', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -111,6 +196,12 @@ const setContactDialog = async (msgFrom) => {
 const getContactDialog = async (msgFrom) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT * FROM dialogFlows WHERE msgFrom = ?', [msgFrom]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return true;
 	return false;
 }
@@ -118,6 +209,12 @@ const getContactDialog = async (msgFrom) => {
 const getHorarioInicio = async () => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT inicio FROM horariochatbots');
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].inicio;
 	return false;
 }
@@ -125,6 +222,12 @@ const getHorarioInicio = async () => {
 const getHorarioTermino = async () => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT termino FROM horariochatbots');
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].termino;
 	return false;
 }
@@ -132,6 +235,12 @@ const getHorarioTermino = async () => {
 const getLimiteUsuario = async () => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT * FROM limiteconexoes');
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].user;
 	return false;
 }
@@ -139,6 +248,12 @@ const getLimiteUsuario = async () => {
 const getLimiteWhatsApp = async () => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT whatsapp FROM limiteconexoes');
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].whatsapp;
 	return false;
 }
@@ -146,6 +261,12 @@ const getLimiteWhatsApp = async () => {
 const setProtocolo = async (usuario, protocolo) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('INSERT INTO protocolos (`id`, `usuario`, `protocolo`) VALUES (NULL, ?, ?);', [usuario, protocolo]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -153,6 +274,12 @@ const setProtocolo = async (usuario, protocolo) => {
 const getWhatsAppId = async (ticketid) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT whatsappId FROM Tickets WHERE id = ?', [ticketid]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows;
 	return false;
 }
@@ -160,6 +287,12 @@ const getWhatsAppId = async (ticketid) => {
 const getActiveWhatsAppId = async (wppid) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT * FROM Whatsapps WHERE id = ?', [wppid]);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return true;
 	return false;
 }
@@ -169,6 +302,12 @@ const getBotTicket = async (contato) => {
 	let ipsel = "SELECT t.chatbot FROM Tickets t where t.id = " + contato;
 	console.log(ipsel);
 	const [rows] = await connection.execute(ipsel);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].chatbot;
 	return false;
 }
@@ -178,7 +317,14 @@ const setBotTicket = async (contato, st) => {
 	try {
 		let ipsel = "SELECT t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
 		let [retorno] = await connection.execute(ipsel);
-		const [rows] = await connection.execute("update Tickets set chatbot = '" + st + "' where id = " + retorno[0].id + " and chatbot = 'S' ");
+		let upd = "update Tickets set chatbot = '" + st + "', status = 'pending', chatbot = 'N' where id = " + retorno[0].id;
+		const [rows] = await connection.execute(upd);
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
+		});
 		if (rows.length > 0) return true;
 		return false;
 	} catch (error) {
@@ -186,28 +332,113 @@ const setBotTicket = async (contato, st) => {
 	}
 }
 
-const getBotTicket2 = async (contato) => {
+const setTicketClose = async (contato) => {
 	const connection = await createConnection();
-	let ipsel = "SELECT t.chatbot FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
+	try {
+		let ipsel = "SELECT t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
+		console.log('Ticket Close: ' + ipsel);
+		let [retorno] = await connection.execute(ipsel);
+		let upd = "update Tickets set chatbot = 'N', status = 'willclosed' where id = " + retorno[0].id;
+		console.log(upd);
+		const [rows] = await connection.execute(upd);
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
+		});
+		if (rows.length > 0) return true;
+		return false;
+	} catch (error) {
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
+		});
+		return false;
+	}
+}
+
+const getBotTicket2 = async (contato,idDep) => {
+	const connection = await createConnection();
+	let ipsel = "SELECT t.chatbot, t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
 	let [rows] = await connection.execute(ipsel);
-	if (rows.length > 0) return rows[0].chatbot;
-	return 'N';
+	if (rows.length > 0) {
+		let upd = "update Tickets set queueId = " + idDep + " where id = " + rows[0].id;
+		await connection.execute(upd);
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
+		});
+		return rows[0].chatbot;
+	} else {
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
+		});
+	    return 'N';
+	}
 }
 
 const getPrimeiroContato = async (contato) => {
 	const connection = await createConnection();
 	let ipsel = "SELECT COUNT(*) AS total FROM Tickets t INNER JOIN Contacts c ON c.id = t.contactId INNER JOIN Messages m ON m.ticketId = t.id WHERE t.status <> 'closed' AND c.number = '" + contato + "' AND m.fromMe = 1";
-	console.log(ipsel);
+	//console.log(ipsel);
 	let [rows] = await connection.execute(ipsel);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
 	if (rows.length > 0) return rows[0].total;
 	return '0';
 }
 
-const updateChatBot = async () => {
+const updateChatBot = async (contato) => {
+	try {
+		let ipsel = "SELECT id FROM statuschatbots WHERE msgFrom = '" + contato + "'";
+		let [retorno] = await connection.execute(ipsel);
+		if (retorno.length = 0)
+		{
+			const [rows] = await connection.execute('INSERT INTO statuschatbots (`msgFrom`) VALUES (?);', [contato]);
+			delay(1000).then(async function(){
+				await connection.end();
+				delay(500).then(async function(){
+					connection.destroy();
+				});
+			});	
+			if (rows.length > 0) return true;
+			return false;
+			}
+	} catch (error) {
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
+		});
+		return false;
+	}
+}
+
+const getStatusAtual = async (ticket) => {
+	let ipsel = 'SELECT st.status FROM Tickets t INNER JOIN Contacts c ON c.id = t.contactId INNER JOIN statuschatbots st ON st.msgFrom = c.number WHERE t.id = ' + ticket;
 	const connection = await createConnection();
-	const [rows] = await connection.execute('INSERT INTO statuschatbots (msgFrom) SELECT number FROM Contacts t1 WHERE t1.number NOT IN (SELECT msgFrom FROM statuschatbots)');
-	if (rows.length > 0) return true;
-	return false;
+	let [rows] = await connection.execute(ipsel);
+	delay(1000).then(async function(){
+		await connection.end();
+		delay(500).then(async function(){
+			connection.destroy();
+		});
+	});
+	if (rows.length > 0) return rows[0].status;
+	return 'off';
 }
 
 
@@ -239,5 +470,7 @@ module.exports = {
 	getChatBot2,
 	getBotTicket2,
 	getPrimeiroContato,
-	updateChatBot
+	updateChatBot,
+	getStatusAtual,
+	setTicketClose
 }

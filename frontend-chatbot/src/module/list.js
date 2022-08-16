@@ -50,6 +50,7 @@ class listComponent extends React.Component  {
             <th scope="col">#</th>
             <th scope="col">Pergunta</th>
             <th scope="col">Resposta</th>
+            <th scope="col">Transfere</th>
             <th scope="col">Editar</th>
             <th scope="col">Deletar</th>
           </tr>
@@ -82,6 +83,7 @@ class listComponent extends React.Component  {
             <th>{data.id}</th>
             <td>{data.pergunta}</td>
             <td>{data.resposta}</td>
+            <td>{data.Departamento}</td>
             <td>
               <Link class="btn btn-outline-info" to={"/edit/"+data.id}>Editar</Link>
             </td>

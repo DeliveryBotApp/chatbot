@@ -22,6 +22,9 @@ app.use((req, res, next) => {
 const perguntasRouters = require('./routes/PerguntasRoute');
 app.use('/perguntas', perguntasRouters);
 
+const departamentosRouters = require('./routes/DepartamentosRoute');
+app.use('/departamentos', departamentosRouters);
+
 const agendamentoRouters = require('./routes/AgendamentoRoute');
 app.use('/agendamento', agendamentoRouters);
 /*

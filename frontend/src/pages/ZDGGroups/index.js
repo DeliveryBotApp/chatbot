@@ -148,7 +148,7 @@ async function zdgNASA (newMessAgeGroupNasa, iD, token) {
 
 const initGet = {
 	host: process.env.REACT_APP_BACKEND_URL.split("//")[1],
-	path: 'whatsappzdg'
+	path: '/whatsappzdg'
   };
   
 async function GETSender() {

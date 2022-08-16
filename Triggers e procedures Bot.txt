@@ -1,0 +1,63 @@
+DELIMITER //
+CREATE TRIGGER TRG_IncluiStatusChatBot
+AFTER INSERT ON Contacts
+FOR EACH ROW
+BEGIN
+
+      DELETE FROM statuschatbots WHERE msgFrom = NEW.number;
+      
+      INSERT into statuschatbots (msgFrom) VALUES (NEW.number);
+
+END //
+DELIMITER ;
+
+
+DELIMITER //
+CREATE TRIGGER TRG_AlterChatBots
+BEFORE UPDATE ON chatbots
+FOR EACH ROW
+BEGIN
+    SET new.Departamento = (SELECT NAME FROM Queues WHERE id = NEW.idDepartamento);
+END //
+DELIMITER ;
+
+
+DELIMITER $$
+
+DROP PROCEDURE IF EXISTS `SP_FechaTickets` $$
+CREATE PROCEDURE `SP_FechaTickets`()
+BEGIN
+
+    DECLARE done INT DEFAULT FALSE;
+    DECLARE ipid INTEGER;
+
+    DECLARE cur1 CURSOR FOR (select t1.id from Tickets t1 where date_add(t1.updatedAt,INTERVAL 30 MINUTE) < NOW() AND STATUS <> 'closed');
+									  
+    DECLARE CONTINUE HANDLER FOR NOT FOUND SET done = TRUE;
+    OPEN cur1;
+
+    read_loop: LOOP
+
+         FETCH cur1 INTO ipid;
+		     IF done THEN
+            LEAVE read_loop;
+         END IF;
+
+         update Tickets SET STATUS = 'closed' WHERE id = ipid;
+
+    END LOOP;
+
+    CLOSE cur1;
+
+END $$
+
+DELIMITER ;
+
+
+CREATE EVENT event_fecha_ticket
+ON SCHEDULE EVERY 10 MINUTE
+STARTS '2022-08-05 07:00:00'
+ENDS '2052-08-05 18:00:00'
+DO
+   CALL SP_FechaTickets;
+
