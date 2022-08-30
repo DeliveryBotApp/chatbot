@@ -23,6 +23,25 @@ const getReply = async (keyword) => {
 	return false;
 }
 
+const getOutOfTimeMsg = async () => {
+  function delay(t, v) {
+    return new Promise(function (resolve) {
+      setTimeout(resolve.bind(null, v), t)
+    });
+  }
+
+  const connection = await createConnection();
+  const [rows] = await connection.execute('SELECT s.value FROM Settings s WHERE s.`key` = "msgOutOfTime"');
+  delay(1000).then(async function(){
+    await connection.end();
+    delay(500).then(async function(){
+      connection.destroy();
+    });
+  });
+  if (rows.length > 0) return rows[0].value;
+  return false;
+}
+
 const getAgendamento = async (dataEnvio) => {
 	const connection = await createConnection();
 	const [rows] = await connection.execute('SELECT * FROM agendamentos WHERE dataEnvio = ? AND statusEnvio != "Enviado"', [dataEnvio]);
@@ -78,28 +97,50 @@ const getChatBot2 = async (contato) => {
 
 const setChatBotOff = async (msgFrom) => {
 	const connection = await createConnection();
-	const [rows] = await connection.execute('UPDATE statuschatbots SET status = "off" WHERE msgFrom = ?', [msgFrom]);
-	delay(1000).then(async function(){
-		await connection.end();
-		delay(500).then(async function(){
-			connection.destroy();
+	try {
+		let ipsel = "SELECT t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + msgFrom + "'  ORDER BY t.id DESC LIMIT 1"
+		let [retorno] = await connection.execute(ipsel);
+		let upd = "update Tickets set status = 'pending', chatbot = 'N' where id = " + retorno[0].id;
+		const [rows] = await connection.execute(upd);
+
+		//const [rows] = await connection.execute('UPDATE statuschatbots SET status = "off" WHERE msgFrom = ?', [msgFrom]);
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
 		});
-	});
-	if (rows.length > 0) return rows;
-	return false;
+		if (rows.length > 0) return rows;
+		return false;
+	} catch (error) {
+		console.log('Erro: ' + error)
+		return false;
+	}
+
 }
 
 const setChatBotOn = async (msgFrom) => {
 	const connection = await createConnection();
-	const [rows] = await connection.execute('UPDATE statuschatbots SET status = "ok" WHERE msgFrom = ?', [msgFrom]);
-	delay(1000).then(async function(){
-		await connection.end();
-		delay(500).then(async function(){
-			connection.destroy();
+	try {
+		let ipsel = "SELECT t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + msgFrom + "'  ORDER BY t.id DESC LIMIT 1"
+		let [retorno] = await connection.execute(ipsel);
+		let upd = "update Tickets set status = 'bot', chatbot = 'S' where id = " + retorno[0].id;
+		const [rows] = await connection.execute(upd);
+
+		//const [rows] = await connection.execute('UPDATE statuschatbots SET status = "ok" WHERE msgFrom = ?', [msgFrom]);
+		delay(1000).then(async function(){
+			await connection.end();
+			delay(500).then(async function(){
+				connection.destroy();
+			});
 		});
-	});
-	if (rows.length > 0) return rows;
-	return false;
+		if (rows.length > 0) return rows;
+		return false;
+	} catch (error) {
+		console.log('Erro: ' + error)
+		return false;
+	}
+
 }
 
 const getDialogFlowAudio = async (msgFrom) => {
@@ -315,7 +356,7 @@ const getBotTicket = async (contato) => {
 const setBotTicket = async (contato, st) => {
 	const connection = await createConnection();
 	try {
-		let ipsel = "SELECT t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
+		let ipsel = "SELECT t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE t.status <> 'closed' and c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
 		let [retorno] = await connection.execute(ipsel);
 		let upd = "update Tickets set chatbot = '" + st + "', status = 'pending', chatbot = 'N' where id = " + retorno[0].id;
 		const [rows] = await connection.execute(upd);
@@ -362,11 +403,14 @@ const setTicketClose = async (contato) => {
 
 const getBotTicket2 = async (contato,idDep) => {
 	const connection = await createConnection();
-	let ipsel = "SELECT t.chatbot, t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
+	let ipsel = "SELECT t.chatbot, t.id FROM Contacts c INNER JOIN Tickets t ON t.contactId = c.id WHERE t.status <> 'closed' and c.number = '" + contato + "'  ORDER BY t.id DESC LIMIT 1";
+	console.log('getBotTicket2: ' + ipsel)
 	let [rows] = await connection.execute(ipsel);
 	if (rows.length > 0) {
-		let upd = "update Tickets set queueId = " + idDep + " where id = " + rows[0].id;
-		await connection.execute(upd);
+		if (idDep !== 'N'){
+		   let upd = "update Tickets set queueId = " + idDep + " where id = " + rows[0].id;
+		   await connection.execute(upd);
+		}
 		delay(1000).then(async function(){
 			await connection.end();
 			delay(500).then(async function(){
@@ -412,7 +456,7 @@ const updateChatBot = async (contato) => {
 				delay(500).then(async function(){
 					connection.destroy();
 				});
-			});	
+			});
 			if (rows.length > 0) return true;
 			return false;
 			}
@@ -472,5 +516,6 @@ module.exports = {
 	getPrimeiroContato,
 	updateChatBot,
 	getStatusAtual,
-	setTicketClose
+	setTicketClose,
+  getOutOfTimeMsg
 }

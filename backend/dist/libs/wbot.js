@@ -128,93 +128,107 @@ exports.initWbot = (whatsapp) => __awaiter(void 0, void 0, void 0, function* () 
                 yield syncUnreadMessages(wbot);
                 resolve(wbot);
             }));
-            wbot.on('message', async msg => {
-                function delay(t, v) {
-                    return new Promise(function (resolve) {
-                        setTimeout(resolve.bind(null, v), t)
-                    });
-                }
-                wbot.sendPresenceAvailable();
-                const keyword = msg.body.toLowerCase();
-                //const date = new Date();
-                //const seconds = date.getSeconds() * 60;
-                //const minutes = date.getMinutes() * 60 * 60;
-                //const hour = date.getHours() * 24 * 60 * 60;
-                //console.log(hour+minutes+seconds);
-                //const atendimentoZDG = hour + minutes + seconds;
-                //const inicioAtendimento = await db.getHorarioInicio();
-                //const hoursInicio = inicioAtendimento.split(':')[0] * 24 * 60 * 60;
-                //const minutesInicio = inicioAtendimento.split(':')[1] * 60 * 60;
-                //const secondsInicio = inicioAtendimento.split(':')[2] * 60;
-                //console.log(hoursInicio+minutesInicio+secondsInicio);
-                //const inicioAtendimentoZDG = hoursInicio + minutesInicio + secondsInicio;
-                //const terminoAtendimento = await db.getHorarioTermino();
-                //const hoursTermino = terminoAtendimento.split(':')[0] * 24 * 60 * 60;
-                //const minutesTermino = terminoAtendimento.split(':')[1] * 60 * 60;
-                //const secondsTermino = terminoAtendimento.split(':')[2] * 60;
-                //const terminoAtendimentoZDG = hoursTermino + minutesTermino + secondsTermino;
-                //console.log(hoursTermino+minutesTermino+secondsTermino);
+          wbot.on('message', async msg => {
+            function delay(t, v) {
+              return new Promise(function (resolve) {
+                setTimeout(resolve.bind(null, v), t)
+              });
+            }
+            wbot.sendPresenceAvailable();
+            const keyword = msg.body.toLowerCase();
+            const date = new Date();
+            const seconds = date.getSeconds();
+            const minutes = date.getMinutes() * 60;
+            const hour = date.getHours() * 60 * 60;
+            const horario_atual = parseInt(hour) + parseInt(minutes) + parseInt(seconds);
+            console.log(horario_atual);
 
-                let chatBotStatus = 'off';
+            const inicioAtendimento = await db.getHorarioInicio();
+            const hoursInicio = inicioAtendimento.split(':')[0] * 60 * 60;
+            const minutesInicio = inicioAtendimento.split(':')[1] * 60;
+            const secondsInicio = inicioAtendimento.split(':')[2];
+            const horario_inicio = parseInt(hoursInicio) + parseInt(minutesInicio) + parseInt(secondsInicio);
+            console.log(horario_inicio);
 
-                //console.log('Estou no wbot: ' + msg.from.split('@')[0])
-                chatBotStatus = await db.getChatBot(msg.from.split('@')[0]);
-                console.log('ChatBot: ' + chatBotStatus);	                        
+            const terminoAtendimento = await db.getHorarioTermino();
+            const hoursTermino = terminoAtendimento.split(':')[0] * 60 * 60;
+            const minutesTermino = terminoAtendimento.split(':')[1] * 60;
+            const secondsTermino = terminoAtendimento.split(':')[2];
+            const horario_final = parseInt(hoursTermino) + parseInt(minutesTermino) + parseInt(secondsTermino);
+            console.log(horario_final);
 
-                if (chatBotStatus === "ok") {
-                    if (keyword === '99') {
-                        await db.setBotTicket(msg.from.split('@')[0], 'N');
-                        delay(1000).then(function () {
-                            msg.reply('Seu atendimento está sendo encaminhado para um atendente...');
-                        });
-                    } else {
-                        let primeirocontato = await db.getPrimeiroContato(msg.from.split('@')[0]);
-                        if (primeirocontato === 0) {
-                            // enviar saudacao
-                            let saudacao = await db.getReply('saudacao');
-                            console.log('saudacao:' + saudacao);
-                            if (saudacao !== false) {
-                                let achei = 'Não consegui entender sua pergunta.\r\n*99 - Para falar com atendente.*';
-                                saudacao.forEach((resp) => {
-                                    achei = resp.resposta;
-                                });    
-                                delay(1000).then(function () {
-                                    msg.reply(achei);
-                                });
-                            }
-                        } else  {
-                            let resposta = await db.getReply(keyword);
-                            if (resposta === false){
-                                const bot = await db.getBotTicket2(msg.from.split('@')[0]);
-                                if (bot.toLowerCase() === 's') {
-                                    delay(1000).then(function () {
-                                        msg.reply('Não consegui entender sua pergunta.\r\n*99 - Para falar com atendente.*');
-                                    });
-                                }
-                            } else {
-                                let replyMessage = 'Não consegui entender sua pergunta.\r\n*99 - Para falar com atendente.*';
-                                let idDep = '0';
-                                resposta.forEach((resp, i) => {
-                                    replyMessage = resp.resposta;
-                                    idDep = resp.idDepartamento;
-                                })     
-                                console.log('Achei a resposta ' + replyMessage);
-                                logger_1.logger.info(`Acessando MYSQL: ${sessionName} OK`);
-                                const bot = await db.getBotTicket2(msg.from.split('@')[0],idDep);
-                                if (bot.toLowerCase() === 's') {
-                                    delay(1000).then(function () {
-                                        msg.reply(replyMessage);
-                                    });
-                                } else {
-                                    delay(1000).then(function () {
-                                        msg.reply('Esse atendimento esta sendo feito por um humano \r\n *Foi você que solicitou acima.*');
-                                    });
-                                }
-                            }
-                        }
+            let chatBotStatus = 'off';
+
+            //console.log('Estou no wbot: ' + msg.from.split('@')[0])
+            chatBotStatus = await db.getChatBot(msg.from.split('@')[0]);
+            console.log('ChatBot: ' + chatBotStatus);
+
+            if (horario_atual > horario_inicio && horario_atual > horario_final) {
+              let msgOut = await db.getOutOfTimeMsg();
+              if (!msgOut) {
+                msgOut = "Estamos fora do nosso horário de atendimento, por favor, entre em contato novamente mais tarde";
+              }
+              delay(1000).then(function () {
+                msg.reply(msgOut);
+              });
+            } else {
+              if (chatBotStatus === "ok") {
+                if (keyword === '99') {
+                  await db.setBotTicket(msg.from.split('@')[0], 'N');
+                  delay(1000).then(function () {
+                    msg.reply('Seu atendimento está sendo encaminhado para um atendente...');
+                  });
+                } else {
+                  let primeirocontato = await db.getPrimeiroContato(msg.from.split('@')[0]);
+                  if (primeirocontato === 0) {
+                    // enviar saudacao
+                    let saudacao = await db.getReply('saudacao');
+                    console.log('saudacao:' + saudacao);
+                    let achei = 'Não consegui entender sua pergunta.\r\n*99 - Para falar com atendente.*';
+
+                    if (saudacao) {
+                      saudacao.forEach((resp) => {
+                        achei = resp.resposta;
+                      });
                     }
-                }              
-            });
+
+                    delay(1000).then(function () {
+                      msg.reply(achei);
+                    });
+                  } else  {
+                    let resposta = await db.getReply(keyword);
+                    if (!resposta){
+                      const bot = await db.getBotTicket2(msg.from.split('@')[0]);
+                      if (bot.toLowerCase() === 's') {
+                        delay(1000).then(function () {
+                          msg.reply('Não consegui entender sua pergunta.\r\n*99 - Para falar com atendente.*');
+                        });
+                      }
+                    } else {
+                      let replyMessage = 'Não consegui entender sua pergunta.\r\n*99 - Para falar com atendente.*';
+                      let idDep = '0';
+                      resposta.forEach((resp, i) => {
+                        replyMessage = resp.resposta;
+                        idDep = resp.idDepartamento;
+                      })
+                      console.log('Achei a resposta ' + replyMessage);
+                      logger_1.logger.info(`Acessando MYSQL: ${sessionName} OK`);
+                      const bot = await db.getBotTicket2(msg.from.split('@')[0],idDep);
+                      if (bot.toLowerCase() === 's') {
+                        delay(1000).then(function () {
+                          msg.reply(replyMessage);
+                        });
+                      } else {
+                        delay(1000).then(function () {
+                          msg.reply('Esse atendimento esta sendo feito por um humano \r\n *Foi você que solicitou acima.*');
+                        });
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          });
         }
         catch (err) {
             logger_1.logger.error(err);

@@ -346,12 +346,12 @@ const Ticket = () => {
             <TicketActionButtons ticket={ticket} />
           </div>
 
-	  <FormControlLabel control={
+	  {/*<FormControlLabel control={
 	  <Switch
 	     checked={checked2}
              onChange={handleChange2}
-	     inputProps={{ 'aria-label':'controlled' }}	     	
-	  />} label="Habilita ChatBot" />
+	     inputProps={{ 'aria-label':'controlled' }}
+	  />} label="Habilita ChatBot" />*/}
 
         </TicketHeader>
 

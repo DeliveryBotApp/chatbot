@@ -37,9 +37,7 @@ const FindOrCreateTicketService = (contact, whatsappId, unreadMessages, groupCon
             console.log('Status atual 1: ' + ticket.status);
             yield ticket.update({ unreadMessages, status: 'closed',  chatbot: 'N' });     
         } else {            
-            console.log('Aqui agora 1 ' + ticket.id)
             let statual = ticket.status;
-            console.log('Status atual: ' + statual);
             let st = ticket.status;
             let bot = "";
             let chat = ticket.chatbot;
@@ -55,14 +53,13 @@ const FindOrCreateTicketService = (contact, whatsappId, unreadMessages, groupCon
             }
             if (statual === 'open'){
                 if (bot === "ok"){
+                    st = 'open';
+                    chat = 'N';    
                     if (chat !== 'N')
                     {
-                       st = 'bot'; 
-                       chat = 'S';                 
-                    } else {
-                        st = 'open';
-                        chat = 'N';    
-                    }
+                      // st = 'bot'; 
+                      // chat = 'S';                 
+                    } 
                 }  else {  
                     st = 'open';
                     chat = 'N';
@@ -85,9 +82,7 @@ const FindOrCreateTicketService = (contact, whatsappId, unreadMessages, groupCon
             yield ticket.update({ unreadMessages, status: st,  chatbot: chat });
         }
     } else if (!ticket) {
-        console.log('Mensagem: ' + unreadMessages);
         if (unreadMessages !== '00'){
-            console.log('Incluindo ticket ');
             let st = "pending";
             let bot = "N";
             bot = yield db.getChatBot2(contact.id)
