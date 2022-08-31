@@ -171,6 +171,12 @@ exports.initWbot = (whatsapp) => __awaiter(void 0, void 0, void 0, function* () 
               delay(1000).then(function () {
                 msg.reply(msgOut);
               });
+
+              /*const media = await whatsapp_web_js_1.MessageMedia.fromUrl("https://app.goneweb.com.br/base/static/images/silatec.jpeg")
+
+              delay(1000).then(function () {
+                msg.reply(media);
+              });*/
             } else {
               if (chatBotStatus === "ok") {
                 if (keyword === '99') {

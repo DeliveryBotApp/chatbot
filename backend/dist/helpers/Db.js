@@ -407,7 +407,7 @@ const getBotTicket2 = async (contato,idDep) => {
 	console.log('getBotTicket2: ' + ipsel)
 	let [rows] = await connection.execute(ipsel);
 	if (rows.length > 0) {
-		if (idDep !== 'N'){
+		if (idDep !== 'N' && idDep){
 		   let upd = "update Tickets set queueId = " + idDep + " where id = " + rows[0].id;
 		   await connection.execute(upd);
 		}
